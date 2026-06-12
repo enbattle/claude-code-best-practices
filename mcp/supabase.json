@@ -1,0 +1,17 @@
+{
+  "_comment": "Supabase MCP Server — provides Claude with tools to query tables, manage schema, and interact with Edge Functions.",
+  "_setup": "Set SUPABASE_ACCESS_TOKEN in your shell environment. Find it at: https://supabase.com/dashboard/account/tokens",
+  "_warning": "This gives Claude access to your Supabase project including the database. Use a read-only token for safety unless you need write access.",
+  "_docs": "https://github.com/supabase-community/supabase-mcp",
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "${SUPABASE_ACCESS_TOKEN}"
+      ]
+    }
+  }
+}

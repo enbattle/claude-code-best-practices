@@ -1,0 +1,71 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv *)",
+      "Bash(python *)",
+      "Bash(pytest *)",
+      "Bash(mypy *)",
+      "Bash(ruff *)",
+      "Bash(alembic *)",
+      "Bash(uvicorn *)",
+      "Bash(celery *)",
+      "Bash(docker-compose *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(ls *)",
+      "Bash(cat *)"
+    ],
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(rm -rf *)",
+      "Bash(alembic downgrade base)"
+    ]
+  },
+
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/session-memory.js"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/pre-tool-guard.js"
+          }
+        ]
+      }
+    ]
+  },
+
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  },
+
+  "env": {
+    "APP_ENV": "development",
+    "DEBUG": "true"
+  }
+}

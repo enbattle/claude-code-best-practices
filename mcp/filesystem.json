@@ -1,0 +1,17 @@
+{
+  "_comment": "Filesystem MCP Server — provides explicit file system access to directories beyond the project root.",
+  "_setup": "Update 'allowedDirectories' to the paths Claude should be able to access. Use absolute paths.",
+  "_warning": "Only grant access to directories Claude needs. Broader access = larger attack surface.",
+  "_docs": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem",
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/path/to/allowed/directory",
+        "/another/allowed/directory"
+      ]
+    }
+  }
+}

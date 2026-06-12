@@ -1,0 +1,14 @@
+{
+  "_comment": "GitHub MCP Server — provides Claude with tools to read/write GitHub issues, PRs, code, and workflows.",
+  "_setup": "Set GITHUB_PERSONAL_ACCESS_TOKEN in your shell environment. Required scopes: repo, read:org",
+  "_docs": "https://github.com/github/github-mcp-server",
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  }
+}
