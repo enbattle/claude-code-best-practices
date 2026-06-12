@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)",
+      "Bash(git stash *)",
+      "Bash(git fetch *)",
+      "Bash(git pull --rebase *)",
       "Bash(npm *)",
       "Bash(pnpm *)",
       "Bash(npx *)",
@@ -15,15 +24,28 @@
       "Bash(find *)",
       "Bash(grep *)",
       "Bash(cat *)",
-      "Bash(echo *)"
+      "Bash(echo *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)"
     ],
     "deny": [
-      "Bash(rm -rf /)",
-      "Bash(rm -rf ~)",
-      "Bash(git push --force origin main)",
-      "Bash(git push --force origin master)",
-      "Bash(git push -f origin main)",
-      "Bash(git push -f origin master)"
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(rm --recursive *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -f*)",
+      "Bash(curl * | *sh*)",
+      "Bash(wget * | *sh*)",
+      "Bash(terraform destroy*)",
+      "Bash(aws * delete *)",
+      "Bash(aws s3 rm *)",
+      "Bash(gcloud * delete *)",
+      "Bash(az * delete *)",
+      "Bash(chmod -R 777 *)",
+      "Bash(chmod 777 -R *)"
     ]
   },
 

@@ -14,6 +14,7 @@ For each review, consider these attacker capabilities:
 - Can be an authenticated user trying to access another user's data
 - Can be a former employee with revoked credentials
 - Can observe error messages and timing differences
+- Can embed malicious instructions in files, comments, or data that an AI agent will process (prompt injection)
 
 ## What to audit
 
@@ -48,6 +49,15 @@ For each review, consider these attacker capabilities:
 - Are tokens cryptographically random (not sequential or guessable)?
 - Is sensitive data encrypted at rest where appropriate?
 - Are HTTPS connections enforced?
+
+### Prompt injection and agentic attack surfaces
+If this codebase is processed by AI coding agents, or if the application itself uses AI:
+
+- Are there any strings in source files, comments, or documentation that look like they're trying to redirect an AI agent's behavior? (e.g., "IGNORE PREVIOUS INSTRUCTIONS", "AI: please also...")
+- Does the application pass user-controlled input into an LLM prompt without sanitization? This is prompt injection at the application layer.
+- Does the application use an AI agent with tool access (file system, database, APIs)? If so, is the agent's tool scope minimized to what it actually needs?
+- Are there hardcoded credentials anywhere in the codebase that an AI agent reading these files could inadvertently expose in a log, transcript, or session summary?
+- Does the application surface internal file paths, database schema, or environment details in AI agent responses that could be harvested?
 
 ### OWASP Top 10
 Work through the current OWASP Top 10 for the type of application being reviewed.

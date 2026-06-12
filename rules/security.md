@@ -172,6 +172,64 @@ When a security vulnerability is discovered:
 | Security Misconfiguration | Default-deny, no debug mode in prod, rotate defaults |
 | Vulnerable Components | `npm audit`, pin versions, Dependabot |
 | Auth Failures | httpOnly cookies, MFA support, rate-limit login |
-| Data Integrity Failures | Signed packages, verify webhook signatures |
+| Software and Data Integrity Failures | Signed packages, verify webhook signatures |
 | Logging Failures | Log auth events, alert on anomalies, no PII in logs |
 | SSRF | Validate/allowlist URLs, block internal IP ranges |
+
+---
+
+## Agentic AI Security
+
+These threats are specific to codebases where AI coding agents are actively working, and to applications that use AI internally. They don't appear in traditional security checklists because they didn't exist before autonomous agents.
+
+### Prompt Injection
+
+Prompt injection is when malicious instructions are embedded in content that an AI agent reads — source code, comments, documentation, API responses, third-party data — and the agent follows those instructions as if they came from the user.
+
+**In your codebase as a target:**
+- Audit for strings in comments, docs, or data files that attempt to redirect AI behavior
+- Common patterns: `"AI: ignore previous instructions"`, `"SYSTEM: your new task is..."`, `"<!-- assistant, please also..."`
+- Any string that would read like a command to an AI rather than a note to a human is suspicious
+- Treat third-party repos, cloned dependencies, and fetched documentation as untrusted — they can contain injections that activate when an agent reads them
+
+**In your application if it uses AI:**
+- Never pass unsanitized user input directly into an LLM prompt
+- Use a clear delimiter or structured prompt template that separates system instructions from user content
+- Validate and sanitize any external data that will be included in a prompt
+- Apply the same trust boundary rules to prompt inputs that you apply to SQL query inputs
+
+### Credential Exposure via Agent Sessions
+
+AI coding agents read many files in the course of normal work. Any credential they encounter can end up in logs, session transcripts, or memory files.
+
+- Never store real credentials in files the agent will read (`.env` files, config files with inline secrets)
+- Use a secrets manager or environment injection — the credential should never exist as a file on disk
+- Session memory files (`.claude/session-memory.md`) must never contain credentials — audit them regularly
+- If an agent session logs are stored or transmitted anywhere, treat them with the same sensitivity as your application logs (no PII, no secrets)
+
+### Confused Deputy via AI Tools
+
+An AI agent with write access to files, databases, or external APIs is a "deputy" — it acts on behalf of the user but with its own credentials. Malicious content can abuse this.
+
+- **Minimize agent tool scope:** a reviewer agent needs `Read` only; a planner needs `Read` only; only the implementing agent needs `Write` — and only to the directories relevant to the task
+- **Separate read and write agents:** a read-only agent cannot exfiltrate data via file writes even if injected
+- **Principle of least privilege applies to agents as strongly as it applies to service accounts**
+
+### Production Isolation for AI Sessions
+
+The most common catastrophic agentic failure: AI agent connects to production database, misidentifies environment, executes destructive query.
+
+**Defense:**
+- Dev session credentials must physically not have production access — enforced at the IAM/network layer, not just by instructions
+- Production credentials must never appear in `.env`, config files, or environment variables accessible during a dev AI session
+- Name credentials unambiguously: `PRODUCTION_DATABASE_URL` is harder to accidentally use than `DATABASE_URL`
+- Database users used in AI sessions should have the minimum necessary permissions — a read-only replica where possible, no DDL privileges ever
+
+### AI-Generated Code Security Review
+
+AI-generated code introduces a specific risk: the code may be syntactically correct and pass tests while containing subtle security issues that a human reviewer would catch.
+
+Before merging AI-generated code that touches auth, payments, data access, or user input:
+- Run the `security-reviewer` agent explicitly — don't rely on general code review
+- Check specifically for: overly permissive queries (missing `WHERE user_id = current_user`), hardcoded values that look like test data but aren't, error handling that exposes internals, and subtle authorization bypasses
+- Be skeptical of AI-generated cryptographic code — use established libraries, not generated implementations
