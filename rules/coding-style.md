@@ -23,6 +23,9 @@ Prefer the straightforward solution over the clever one. Code is read far more o
 ### DRY (Don't Repeat Yourself)
 Extract logic that appears in two or more places into a shared function. But don't extract prematurely — three similar lines in different contexts is better than one abstraction that fits none of them perfectly.
 
+### Search before you write
+Before implementing any new function, component, or utility: search the codebase for an existing implementation. This is the single most effective way to prevent the codebase from accumulating redundant code — especially when AI tools are involved in development.
+
 ### YAGNI (You Aren't Gonna Need It)
 Build only what the current requirement needs. No speculative abstractions, no "we might need this later" parameters, no feature flags for features that don't exist yet.
 
@@ -191,3 +194,84 @@ No circular dependencies. If you feel the need for one, the abstraction layer is
 | God objects / God functions | Split by responsibility |
 | Primitive obsession (raw strings for emails, IDs) | Branded types or value objects |
 | Dead code | Delete it — git history preserves it |
+
+---
+
+## Reuse and Modularity
+
+This section is specifically about preventing redundant code accumulation — a problem that accelerates when AI coding tools are involved, because agents generate plausible-looking code without always knowing what already exists.
+
+### Before writing anything new: search first
+
+Run these checks before implementing any new function, hook, component, utility, or service:
+
+```bash
+# Does this function already exist anywhere?
+grep -r "keyword\|alternateKeyword" src/ --include="*.ts" --include="*.tsx" -l
+
+# What utilities already exist?
+ls src/lib/ src/utils/ src/helpers/
+
+# Has this type already been defined?
+grep -rn "interface.*TypeName\|type TypeName" src/
+
+# Is there an existing component that does something similar?
+find src/components -name "*.tsx" | xargs grep -l "keyword"
+```
+
+If you find something that partially fits, extend or generalize it rather than creating a parallel version.
+
+### Where code belongs
+
+| Code type | Where it lives |
+|---|---|
+| Pure utility functions (no framework deps) | `src/lib/` or `src/utils/` |
+| Shared React hooks | `src/hooks/` |
+| Shared UI components | `src/components/ui/` |
+| Feature-specific logic | `src/features/<name>/` or `src/<domain>/` |
+| Types used in 2+ places | `src/types/` |
+| Single-use helpers | Same file as the caller |
+
+When you write a utility and put it inline in a feature file, it becomes invisible to the next person (or agent) looking for reusable code. Shared code must live in shared directories to be discoverable.
+
+### The rule of two
+
+If logic appears in two places, extract it. Not one — two. A single use case doesn't yet define the right abstraction. Two uses reveal the pattern.
+
+When extracting:
+1. Write the shared function in `src/lib/` or `src/utils/`
+2. Replace both original sites with calls to the shared function
+3. Verify tests pass at both call sites
+
+### When NOT to abstract
+
+Premature abstraction is as harmful as duplication. Don't extract when:
+- The two pieces of code are similar but solve different problems — coincidental similarity, not structural duplication
+- The abstraction would require a complex parameter to handle both cases — that's a sign the use cases should stay separate
+- The shared function would be used in only one place — leave it inline
+
+**The test:** can you explain the shared function's purpose without reference to a specific caller? If yes, extract. If the explanation is "it does X for the user flow and Y for the admin flow," keep them separate.
+
+### Modularity checklist for new features
+
+Before opening a PR for any new feature:
+
+- [ ] Searched for existing utilities that could be reused or extended
+- [ ] New utility functions are in `src/lib/` or `src/utils/`, not inline
+- [ ] No new types that duplicate existing types
+- [ ] No new components that duplicate existing components in `src/components/ui/`
+- [ ] Logic used in 2+ places has been extracted to a shared location
+
+### CI enforcement: duplication detection
+
+For codebases where duplication is a significant concern, add `jscpd` to CI to detect copy-pasted blocks:
+
+```bash
+# Install
+npm install --save-dev jscpd
+
+# Run — fails if any duplicated block exceeds 20 lines
+npx jscpd src/ --min-lines 20 --reporters console --blame
+```
+
+Add to your CI pipeline after the build step. A 20-line threshold catches meaningful duplication while ignoring coincidental similarity in short utility functions.

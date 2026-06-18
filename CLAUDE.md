@@ -130,6 +130,8 @@ src/
 
 Follow `rules/coding-style.md` if present, otherwise apply these:
 
+> Additional rule files available via MCP reference: `rules/security.md`, `rules/testing.md`, `rules/git-workflow.md`, `rules/performance.md`, `rules/api-design.md`, `rules/agentic-safety.md`, `rules/observability.md`, `rules/data-privacy.md`, `rules/cicd.md`, `rules/database.md`
+
 ### Non-negotiables
 - **Never mutate** function arguments or external state — return new objects
 - **No magic numbers** — use named constants
@@ -173,6 +175,8 @@ Follow `rules/coding-style.md` if present, otherwise apply these:
 ---
 
 ## Security Requirements
+
+> Full security rules: `rules/security.md` | Data privacy and PII rules: `rules/data-privacy.md` | Agentic safety model: `rules/agentic-safety.md`
 
 **Before any commit, verify:**
 - [ ] No hardcoded secrets, API keys, tokens, or passwords
@@ -234,6 +238,31 @@ refactor/short-description
 - **Prefer editing over creating.** Default to modifying existing files. Only create new files when the existing structure genuinely can't accommodate the change.
 - **Ask about ambiguity, not implementation.** If the requirement is unclear, ask. If the implementation path is clear, proceed.
 - **Surface blockers early.** If you encounter something unexpected (missing dependency, conflicting pattern, unclear requirement), surface it immediately rather than working around it silently.
+
+### Search before you write — mandatory pre-implementation protocol
+
+Before writing any new function, component, hook, utility, or service, run these searches. Do not skip this step.
+
+```bash
+# 1. Search for existing implementations of the same concept
+grep -r "functionName\|conceptKeyword" src/ --include="*.ts" --include="*.tsx" -l
+
+# 2. Check the shared utility / helpers directories
+ls src/lib/ src/utils/ src/helpers/ 2>/dev/null
+
+# 3. Search for similar function signatures
+grep -r "export function\|export const\|export default" src/lib/ src/utils/
+
+# 4. Check for existing types that match what you're about to define
+grep -r "interface\|type " src/types/ 2>/dev/null
+```
+
+If you find an existing implementation that partially fits:
+- **Extend it** rather than writing a parallel version
+- **Generalize it** if the new use case is a subset of a broader pattern
+- **Document** why it can't be reused if you decide to write something new anyway
+
+If you write a new utility that could serve future use cases, put it in `src/lib/` or `src/utils/` — not inline in a feature file.
 
 ### Context management
 - When working on large tasks, break them into subtasks and tackle one at a time

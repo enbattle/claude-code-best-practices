@@ -110,25 +110,32 @@ claude-code-best-practices/
 │
 ├── rules/                       ← Modular rules, @-importable into any CLAUDE.md
 │   ├── coding-style.md         ← Immutability, naming, structure
-│   ├── security.md             ← Pre-commit checklist, secret management
+│   ├── security.md             ← Pre-commit checklist, secret management, agentic threats
 │   ├── testing.md              ← TDD, coverage, test structure
 │   ├── git-workflow.md         ← Commit format, PR standards
 │   ├── performance.md          ← Query, bundle, cache patterns
-│   └── api-design.md           ← REST conventions, status codes, versioning
+│   ├── api-design.md           ← REST conventions, status codes, versioning
+│   ├── agentic-safety.md       ← Three-layer safety model, prompt injection, blast radius
+│   ├── observability.md        ← Structured logging, tracing, RED/USE metrics, alerting
+│   ├── data-privacy.md         ← PII classification, GDPR rights, retention, consent
+│   ├── cicd.md                 ← Pipeline structure, quality gates, deployment strategies
+│   └── database.md             ← Safe migrations, zero-downtime, N+1, connection pooling
 │
 ├── agents/                      ← Subagent definitions → .claude/agents/
 │   ├── README.md               ← How to install and when to use each
 │   ├── planner.md              ← Feature planning specialist
 │   ├── architect.md            ← Architecture review specialist
 │   ├── code-reviewer.md        ← Code review specialist
-│   └── security-reviewer.md   ← Security audit specialist
+│   ├── security-reviewer.md   ← Security audit specialist
+│   └── debugger.md             ← Root-cause analysis specialist
 │
 ├── skills/                      ← Reusable workflows → ~/.claude/skills/
 │   ├── README.md               ← Global vs project-level install guide
 │   ├── tdd-workflow.md         ← Red-green-refactor loop
 │   ├── code-review.md          ← Structured code review
 │   ├── security-review.md      ← Security audit workflow
-│   └── verify.md               ← Verification and regression check
+│   ├── verify.md               ← Verification and regression check
+│   └── refactor.md             ← Safe, test-backed refactoring workflow
 │
 ├── hooks/                       ← Automation scripts → .claude/hooks/
 │   ├── README.md               ← Event types and settings.json wiring
@@ -194,6 +201,7 @@ The `CLAUDE.md` format and `rules/` structure work across AI coding tools, not j
 - **Cursor** — CLAUDE.md maps directly to `.cursorrules` or the system prompt in Cursor settings
 - **Windsurf** — Compatible with `.windsurfrules`
 - **GitHub Copilot** — Core rules can be adapted into `.github/copilot-instructions.md`
+- **Amazon Kiro** — CLAUDE.md structure maps to Kiro's `steering/` docs; agents map to Kiro's agent hooks
 - **Gemini CLI / Codex** — CLAUDE.md structure is understood by most modern coding agents
 
 The agents and skills directories are Claude Code-specific, but the underlying markdown content is portable — you can adapt any agent or skill as a prompt for other tools.

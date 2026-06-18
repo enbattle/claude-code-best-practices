@@ -44,6 +44,7 @@ Project-level agents take precedence over global agents with the same name.
 | `architect.md` | Architecture decisions, design review | Evaluating structural changes or new service design |
 | `code-reviewer.md` | Code review, quality feedback | After implementing a feature, before a PR |
 | `security-reviewer.md` | Security audits, vulnerability check | Before any auth/payment/data change ships |
+| `debugger.md` | Root-cause analysis, incident post-mortems | When a bug's cause is unclear or a fix attempt has failed |
 
 ---
 

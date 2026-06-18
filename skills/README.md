@@ -47,6 +47,7 @@ Copy only the skills you'll use. Unused skills don't cost context when not invok
 | `code-review.md` | `/code-review` | Structured self-review before opening a PR |
 | `security-review.md` | `/security-review` | Pre-ship security audit |
 | `verify.md` | `/verify` | Regression check after a change |
+| `refactor.md` | `/refactor` | Safe, test-backed refactoring with behavior preservation |
 
 ---
 
