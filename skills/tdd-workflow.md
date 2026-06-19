@@ -11,6 +11,15 @@ A strict red-green-refactor cycle for building features with confidence.
 - Fixing a bug (write the failing test first to prove you understand the bug)
 - Refactoring (tests confirm behavior is preserved)
 
+**Before starting:** check if the project already has a testing convention.
+
+```bash
+ls jest.config.* vitest.config.* pytest.ini pyproject.toml 2>/dev/null
+find . -name "*.test.*" -o -name "*.spec.*" | head -5
+```
+
+If the project uses a different approach (test-after, BDD, integration-first), follow that instead of this workflow. This skill is for projects that use TDD or are starting fresh with no established convention.
+
 ---
 
 ## Workflow

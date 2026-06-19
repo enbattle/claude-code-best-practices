@@ -196,15 +196,39 @@ A well-tuned setup looks like:
 
 ## Works With Other Agents
 
-The `CLAUDE.md` format and `rules/` structure work across AI coding tools, not just Claude Code:
+Most of this repo is tool-agnostic. The rules content is plain markdown — any LLM that accepts a system prompt or context file can use it. Only the automation layer (hooks, settings.json) is Claude Code-specific.
 
-- **Cursor** — CLAUDE.md maps directly to `.cursorrules` or the system prompt in Cursor settings
-- **Windsurf** — Compatible with `.windsurfrules`
-- **GitHub Copilot** — Core rules can be adapted into `.github/copilot-instructions.md`
-- **Amazon Kiro** — CLAUDE.md structure maps to Kiro's `steering/` docs; agents map to Kiro's agent hooks
-- **Gemini CLI / Codex** — CLAUDE.md structure is understood by most modern coding agents
+### Compatibility by layer
 
-The agents and skills directories are Claude Code-specific, but the underlying markdown content is portable — you can adapt any agent or skill as a prompt for other tools.
+| Layer | Portable? | Notes |
+|---|---|---|
+| `rules/*.md` content | **Yes — 100%** | Plain markdown, paste into any tool's context |
+| `CLAUDE.md` content | **Yes — 100%** | Rename the file per tool (see table below) |
+| `agents/` content | **Mostly** | Markdown instructions work anywhere; frontmatter + auto-invocation are Claude Code-specific |
+| `skills/` content | **Mostly** | Works as named prompts in other tools; `/skill-name` invocation is Claude Code-specific |
+| `hooks/*.js` | **No** | Claude Code's PreToolUse/Stop event system has no direct equivalent in other tools |
+| `.claude/settings.json` | **No** | Claude Code-specific permissions and hook wiring format |
+
+### CLAUDE.md filename by tool
+
+| Tool | Rename CLAUDE.md to |
+|---|---|
+| **Cursor** | `.cursor/rules/project.mdc` (or `.cursorrules` for legacy) |
+| **Windsurf** | `.windsurfrules` |
+| **GitHub Copilot** | `.github/copilot-instructions.md` |
+| **Amazon Kiro** | `steering/project.md` |
+| **Gemini CLI** | `GEMINI.md` |
+| **ChatGPT / any LLM** | Paste contents into the system prompt |
+
+The content inside the file needs no changes — every tool reads markdown project context the same way.
+
+### What needs adaptation per tool
+
+**Agents:** The frontmatter (`name`, `description`, `tools`) is Claude Code syntax. For Cursor, use rule files with `alwaysApply: false` and glob matchers. For Copilot, adapt agent instructions into `.github/copilot-instructions.md` sections. The actual instruction content copies over directly.
+
+**Skills:** The `/skill-name` slash command is Claude Code-specific. In Cursor, create a rule file. In other tools, paste the skill's workflow as a user message or saved prompt. The step-by-step workflow content is fully reusable.
+
+**Hooks:** There is no equivalent in most other tools. The safety patterns enforced by `pre-tool-guard.js` need to be implemented via your tool's native mechanism — Cursor's background agents have their own permission model; Copilot relies on GitHub's repository permissions.
 
 ---
 

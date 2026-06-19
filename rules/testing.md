@@ -1,5 +1,33 @@
 # Testing Rules
 
+## Adaptive Testing Approach
+
+Before applying any rule in this file, check what testing conventions already exist in the project. The goal is consistency with the existing codebase — not imposing a methodology on a project that has already chosen one.
+
+### How to detect existing conventions
+
+```bash
+# Check for test config files
+ls jest.config.* vitest.config.* pytest.ini pyproject.toml setup.cfg .mocharc.* 2>/dev/null
+
+# Check the test script in package.json
+cat package.json | grep -A5 '"test"'
+
+# Look at existing test files to understand the pattern in use
+find . -name "*.test.*" -o -name "*.spec.*" | head -10
+ls tests/ test/ __tests__/ 2>/dev/null
+```
+
+### If a convention already exists
+
+Follow it. If the project uses test-after with integration tests as the primary suite, write integration tests. If it uses BDD-style (`describe/it` with plain-language naming), follow that. If tests live in `__tests__/` directories, put yours there. Don't introduce a parallel style.
+
+### If no convention exists (new project or first tests)
+
+Default to TDD (test-driven development) using the red-green-refactor cycle. It produces better-designed code, and starting a project with TDD is much easier than retrofitting it later. The `/tdd-workflow` skill walks through the full cycle step by step.
+
+---
+
 ## Coverage Requirements
 
 - **Business logic**: 80% minimum line coverage

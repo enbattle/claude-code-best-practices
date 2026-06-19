@@ -12,6 +12,16 @@
   paste this file into the chat and say: "Fill in all the FILL IN placeholders based on
   this project's codebase." The AI can read your project structure and generate accurate
   values for every section automatically.
+
+  CROSS-TOOL FILENAME GUIDE:
+  This file is named CLAUDE.md for Claude Code. For other tools, rename it:
+    Cursor        → .cursor/rules/project.mdc  (or .cursorrules)
+    Windsurf      → .windsurfrules
+    GitHub Copilot → .github/copilot-instructions.md
+    Gemini CLI    → GEMINI.md
+    Amazon Kiro   → steering/project.md
+    Any LLM       → paste contents into the system prompt
+  The rules/ directory content is tool-agnostic and works with all of the above.
 -->
 
 ## Project Overview
@@ -263,6 +273,21 @@ If you find an existing implementation that partially fits:
 - **Document** why it can't be reused if you decide to write something new anyway
 
 If you write a new utility that could serve future use cases, put it in `src/lib/` or `src/utils/` — not inline in a feature file.
+
+### Detect existing conventions before introducing new ones
+
+Before writing tests, check what testing approach the project already uses:
+
+```bash
+# Identify test framework and config
+ls jest.config.* vitest.config.* pytest.ini pyproject.toml .mocharc.* 2>/dev/null
+grep -A3 '"test"' package.json 2>/dev/null
+
+# Understand the existing test structure
+find . -name "*.test.*" -o -name "*.spec.*" | head -10
+```
+
+Follow whatever pattern is already established — file location, naming conventions, test structure, and framework idioms. Only default to TDD (red-green-refactor) when the project has no existing test convention.
 
 ### Context management
 - When working on large tasks, break them into subtasks and tackle one at a time
